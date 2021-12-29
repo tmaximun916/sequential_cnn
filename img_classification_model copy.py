@@ -9,7 +9,7 @@ from tensorflow.keras import layers
 from tensorflow.keras.models import Sequential
 
 import pathlib
-data_dir = "D:\z. Personal Stuff\School STUFFs\Poly\MLAI\OwnModel\img"
+data_dir = "./img"
 data_dir = pathlib.Path(data_dir)
 image_count = len(list(data_dir.glob('*/*.jpg'))) # .glob to look inside subtree
 print(image_count) # print out no. of images
@@ -130,7 +130,7 @@ plt.show()
 
 
 #predict with new data
-testimg_path = "D:\z. Personal Stuff\School STUFFs\Poly\MLAI/test_redherring.png"
+testimg_path = "./test_croissant.jpg"
 
 img = tf.keras.utils.load_img(
     testimg_path, target_size=(img_height, img_width)
@@ -151,4 +151,4 @@ else:
   )
 
 #save the model
-model.save('./model/')
+model.save('./model')
