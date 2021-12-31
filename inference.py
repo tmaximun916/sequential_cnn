@@ -11,7 +11,7 @@ img_width = 180
 model = keras.models.load_model("my_model")
 
 #predict with new data
-testimg_path = "D:\z. Personal Stuff\School STUFFs\Poly\MLAI/test_redherring2.png"
+testimg_path = "./test_redherring2.png"
 
 img = tf.keras.utils.load_img(testimg_path, target_size=(img_height, img_width))
 img_array = tf.keras.utils.img_to_array(img)

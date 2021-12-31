@@ -91,15 +91,23 @@ model = Sequential([
   data_augmentation,
   layers.Rescaling(1./255, input_shape=(img_height, img_width, 3)),
   layers.Conv2D(16, 3, padding='same', activation='relu'),
+  layers.Conv2D(16, 3, padding='same', activation='relu'),
   layers.MaxPooling2D(),
+  #layers.Dropout(0.2),
+
+  layers.Conv2D(32, 3, padding='same', activation='relu'),
   layers.Conv2D(32, 3, padding='same', activation='relu'),
   layers.MaxPooling2D(),
+  #layers.Dropout(0.2),
+
+  layers.Conv2D(64, 3, padding='same', activation='relu'),
   layers.Conv2D(64, 3, padding='same', activation='relu'),
   layers.MaxPooling2D(),
-  layers.Dropout(0.2), #to reduce overfitting, introduce dropout regularization to the network.
+  #layers.Dropout(0.2), #to reduce overfitting, introduce dropout regularization to the network.
+
   layers.Flatten(),
-  layers.Dense(128, activation='relu'),
-  layers.Dense(num_classes)
+  layers.Dense(128, activation='relu', name="layer1"),
+  layers.Dense(num_classes, name="layer2")
 ])
 
 #Compile the model
@@ -117,8 +125,9 @@ history = model.fit(
   epochs=epochs
 )
 
-#save the model in SavedModel format
-model.save("my_model")
+#save the model
+model.save("my_model") #save the model in SavedModel format
+model.save_weights('weights/cp') #save the weights only in checkpoint format
 
 #visualise
 acc = history.history['accuracy']
