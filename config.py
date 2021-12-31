@@ -1,6 +1,8 @@
 import tensorflow as tf
 
-batch_size = 16
+
+# create a dataset
+batch_size = 32
 img_height = 180
 img_width = 180
 

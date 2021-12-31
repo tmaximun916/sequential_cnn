@@ -8,8 +8,6 @@ from tensorflow import keras
 from tensorflow.keras import layers
 from tensorflow.keras.models import Sequential
 
-
-# create a dataset
 import config
 batch_size = config.batch_size
 img_height = config.img_height
@@ -36,6 +34,7 @@ import matplotlib.pyplot as plt
 #   print(labels_batch.shape)
 #   break
 
+
 #Configure the dataset for performance
 #buffered prefetching so you can yield data from disk without having I/O become blocking.
 AUTOTUNE = tf.data.AUTOTUNE
@@ -43,25 +42,26 @@ AUTOTUNE = tf.data.AUTOTUNE
 train_ds = train_ds.cache().shuffle(1000).prefetch(buffer_size=AUTOTUNE) #keeps the images in memory after they're loaded off disk during the first epoch
 val_ds = val_ds.cache().prefetch(buffer_size=AUTOTUNE)
 
-
 #Standardize the data
 normalization_layer = layers.Rescaling(1./255)
 
 normalized_ds = train_ds.map(lambda x, y: (normalization_layer(x), y))
 image_batch, labels_batch = next(iter(normalized_ds))
 first_image = image_batch[0]
-# Notice the pixel values are now in `[0,1]`.
+# check the pixel values are now in `[0,1]`.
 print(np.min(first_image), np.max(first_image))
 
 #code to augment data using keras api(from tensorflow website)
 data_augmentation = keras.Sequential(
   [
-    layers.RandomFlip("horizontal",
+    layers.Resizing(img_height, img_width),
+    layers.RandomFlip("horizontal_and_vertical",
                       input_shape=(img_height,
                                   img_width,
                                   3)),
-    layers.RandomRotation(0.1),
+    layers.RandomRotation(0.2),
     layers.RandomZoom(0.1),
+    layers.Rescaling(1./255, input_shape=(img_height, img_width, 3)),
   ]
 )
 
@@ -70,33 +70,24 @@ num_classes = len(class_names)
 
 model = Sequential([
   data_augmentation,
-  layers.Rescaling(1./255, input_shape=(img_height, img_width, 3)),
   layers.Conv2D(16, 3, padding='same', activation='relu'),
   layers.Conv2D(16, 3, padding='same', activation='relu'),
   layers.MaxPooling2D(),
-  #layers.Dropout(0.2),
-
   layers.Conv2D(32, 3, padding='same', activation='relu'),
   layers.Conv2D(32, 3, padding='same', activation='relu'),
   layers.MaxPooling2D(),
-  #layers.Dropout(0.2),
-
   layers.Conv2D(64, 3, padding='same', activation='relu'),
   layers.Conv2D(64, 3, padding='same', activation='relu'),
   layers.MaxPooling2D(),
-  #layers.Dropout(0.2), #to reduce overfitting, introduce dropout regularization to the network.
-
   layers.Flatten(),
-  layers.Dense(128, activation='relu', name="layer1"),
-  layers.Dense(num_classes, name="layer2")
+  layers.Dense(128, activation='relu'),
+  layers.Dense(num_classes)
 ])
 
 #Compile the model
 model.compile(optimizer='adam',
               loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
               metrics=['accuracy'])
-
-model.summary()
 
 #use callbacks to save the model at its highest accuracy
 model_checkpoint_callback = tf.keras.callbacks.ModelCheckpoint(filepath=".\my_model", monitor='val_accuracy', mode='max', save_best_only=True)
@@ -109,6 +100,8 @@ history = model.fit(
   epochs=epochs,
   callbacks=[model_checkpoint_callback]
 )
+
+model.summary()
 
 #save the model at the end of training
 # model.save("my_model") #save the model in SavedModel format
