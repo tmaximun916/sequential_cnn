@@ -8,52 +8,33 @@ from tensorflow import keras
 from tensorflow.keras import layers
 from tensorflow.keras.models import Sequential
 
-import pathlib
-data_dir = "D:\z. Personal Stuff\School STUFFs\Poly\MLAI\OwnModel\img"
-data_dir = pathlib.Path(data_dir)
-image_count = len(list(data_dir.glob('*/*.jpg'))) # .glob to look inside subtree
-print(image_count) # print out no. of images
 
 # create a dataset
-batch_size = 32
-img_height = 180
-img_width = 180
+import config
+batch_size = config.batch_size
+img_height = config.img_height
+img_width = config.img_width
 
-#use a validation split when developing model. 80% of the images for training, and 20% for validation.
-train_ds = tf.keras.utils.image_dataset_from_directory(
-  data_dir,
-  validation_split=0.2, 
-  subset="training",
-  seed=123,
-  image_size=(img_height, img_width),
-  batch_size=batch_size)
-
-val_ds = tf.keras.utils.image_dataset_from_directory(
-  data_dir,
-  validation_split=0.2,
-  subset="validation",
-  seed=123,
-  image_size=(img_height, img_width),
-  batch_size=batch_size)
+train_ds = config.train_ds
+val_ds = config.val_ds
 
 class_names = train_ds.class_names
 print(class_names)
 
-
 import matplotlib.pyplot as plt
+#Visualize the data, first 9 images (optional)
+# plt.figure(figsize=(10, 10))
+# for images, labels in train_ds.take(1):
+#   for i in range(9):
+#     ax = plt.subplot(3, 3, i + 1)
+#     plt.imshow(images[i].numpy().astype("uint8"))
+#     plt.title(class_names[labels[i]])
+#     plt.axis("off")
 
-plt.figure(figsize=(10, 10))
-for images, labels in train_ds.take(1):
-  for i in range(9):
-    ax = plt.subplot(3, 3, i + 1)
-    plt.imshow(images[i].numpy().astype("uint8"))
-    plt.title(class_names[labels[i]])
-    plt.axis("off")
-
-for image_batch, labels_batch in train_ds:
-  print(image_batch.shape)
-  print(labels_batch.shape)
-  break
+# for image_batch, labels_batch in train_ds:
+#   print(image_batch.shape)
+#   print(labels_batch.shape)
+#   break
 
 #Configure the dataset for performance
 #buffered prefetching so you can yield data from disk without having I/O become blocking.
@@ -117,17 +98,22 @@ model.compile(optimizer='adam',
 
 model.summary()
 
+#use callbacks to save the model at its highest accuracy
+model_checkpoint_callback = tf.keras.callbacks.ModelCheckpoint(filepath=".\my_model", monitor='val_accuracy', mode='max', save_best_only=True)
+
 #train the model
 epochs=15
 history = model.fit(
   train_ds,
   validation_data=val_ds,
-  epochs=epochs
+  epochs=epochs,
+  callbacks=[model_checkpoint_callback]
 )
 
-#save the model
-model.save("my_model") #save the model in SavedModel format
-model.save_weights('weights/cp') #save the weights only in checkpoint format
+#save the model at the end of training
+# model.save("my_model") #save the model in SavedModel format
+# model.save(".\my_model\my_model.h5") #save the model in HDF5 format
+# model.save_weights('weights/cp') #save the weights only in checkpoint format
 
 #visualise
 acc = history.history['accuracy']
