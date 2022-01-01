@@ -83,7 +83,7 @@ model.compile(optimizer='adam',
 
 #use callbacks to save the model at its highest accuracy
 #model_checkpoint_callback = tf.keras.callbacks.ModelCheckpoint(filepath=".\my_model\my_model.h5", monitor='val_accuracy', mode='max', save_best_only=True) #save model
-model_checkpoint_callback = tf.keras.callbacks.ModelCheckpoint(filepath='weights/cp.h5', monitor='val_accuracy', mode='max', save_best_only=True, save_weights_only=True,) #save weights only
+model_checkpoint_callback = tf.keras.callbacks.ModelCheckpoint(filepath='.\weights\cp.h5', monitor='val_accuracy', mode='max', save_best_only=True, save_weights_only=True,) #save weights only
 
 
 #train the model
@@ -92,18 +92,18 @@ history = model.fit(
   train_ds,
   validation_data=val_ds,
   epochs=epochs,
-  #callbacks=[model_checkpoint_callback]
+  callbacks=[model_checkpoint_callback]
 )
 
-model.summary()
 
 #save the model at the end of training
 # model.save("my_model") #save the model in SavedModel format
-# model.save(".\my_model\my_model.h5") #save the model in HDF5 format
-# model.save_weights('weights/cp') #save the weights only in checkpoint format
+# model.save_weights('.\weights\cp') #save the weights only in checkpoint format
 
 
 #visualise
+model.summary()
+
 acc = history.history['accuracy']
 val_acc = history.history['val_accuracy']
 

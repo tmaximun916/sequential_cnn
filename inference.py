@@ -30,7 +30,7 @@ model = keras.models.load_model(".\my_model\my_model.h5") #load model in HDF5 fo
 model.summary()
     
 #if using webcam, set to 0
-cap = cv2.VideoCapture(".\croissant.mp4")
+cap = cv2.VideoCapture(".\kiwi.mp4")
 
 if (cap.isOpened()):
     print("Camera OK")
@@ -52,7 +52,7 @@ while (True):
     prediction = import_and_predict(image, model)
     decimal_score = 100 * np.max(prediction)
     if decimal_score < 85:
-      txt="This image most likely belongs to {} with a {:.2f} percent confidence.".format("unknown", decimal_score)
+      txt="This image most likely belongs to {} with a {:.2f} percent confidence.".format(config.train_ds.class_names[2], decimal_score)
       print(txt)
     else:
       txt="This image most likely belongs to {} with a {:.2f} percent confidence.".format(config.train_ds.class_names[np.argmax(prediction)], decimal_score)
