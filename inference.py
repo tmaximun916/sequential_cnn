@@ -1,21 +1,16 @@
-from logging import FATAL
 import numpy as np
 import tensorflow as tf
 from tensorflow import keras
-from tensorflow.keras import layers
-from tensorflow.keras.models import Sequential
 
-import config
-img_height=config.img_height
-img_width=config.img_width
-
-from PIL import Image, ImageOps
-import tensorflow as tf
-
+from PIL import Image
 import cv2
 import numpy as np
 import os
 import sys
+
+import config
+img_height=config.img_height
+img_width=config.img_width
 
 
 def import_and_predict(image_data, model):
@@ -25,17 +20,8 @@ def import_and_predict(image_data, model):
         predictions = model.predict(img_array)
         score = tf.nn.softmax(predictions[0])
         
-        # size = (75,75)    
-        # image = ImageOps.fit(image_data, size, Image.ANTIALIAS)
-        # image = image.convert('RGB')
-        # image = np.asarray(image)
-        # image = (image.astype(np.float32) / 255.0)
-
-        # img_reshape = image[np.newaxis,...]
-
-        # prediction = model.predict(img_reshape)
-        
         return score
+
 
 #load model
 model = keras.models.load_model(".\my_model\my_model.h5") #load model in HDF5 format
@@ -43,7 +29,8 @@ model = keras.models.load_model(".\my_model\my_model.h5") #load model in HDF5 fo
 
 model.summary()
     
-cap = cv2.VideoCapture(".\strawberry2.mp4")
+#if using webcam, set to 0
+cap = cv2.VideoCapture(".\croissant.mp4")
 
 if (cap.isOpened()):
     print("Camera OK")
