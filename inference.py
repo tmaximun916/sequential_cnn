@@ -38,11 +38,12 @@ def import_and_predict(image_data, model):
         return score
 
 #load model
-#model = keras.models.load_model(".\my_model\my_model.h5") #load HDF5 format
-model = keras.models.load_model("my_model") #load SavedModel format
+model = keras.models.load_model(".\my_model\my_model.h5") #load model in HDF5 format
+#model = keras.models.load_model("my_model") #load model in SavedModel format
+
 model.summary()
     
-cap = cv2.VideoCapture(".\strawberry.mp4")
+cap = cv2.VideoCapture(".\strawberry2.mp4")
 
 if (cap.isOpened()):
     print("Camera OK")
@@ -54,7 +55,7 @@ while (True):
     if ret:
       cv2.imwrite(filename='img.jpg', img=frame)
       image = Image.open('img.jpg')
-      
+
       if cv2.waitKey(1) & 0xFF == ord('q'):
             break
     else:
@@ -63,15 +64,15 @@ while (True):
     # Display the predictions
     prediction = import_and_predict(image, model)
     decimal_score = 100 * np.max(prediction)
-    if decimal_score < 90:
+    if decimal_score < 85:
       txt="This image most likely belongs to {} with a {:.2f} percent confidence.".format("unknown", decimal_score)
       print(txt)
     else:
       txt="This image most likely belongs to {} with a {:.2f} percent confidence.".format(config.train_ds.class_names[np.argmax(prediction)], decimal_score)
       print(txt)
 
-    cv2.putText(frame, txt, (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 255, 0), 2)
-    scale_percent = 30 # percent of original size
+    cv2.putText(frame, txt, (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 0, 255), 2)
+    scale_percent = 40 # percent of original size
     width = int(frame.shape[1] * scale_percent / 100)
     height = int(frame.shape[0] * scale_percent / 100)
     dim = (width, height)

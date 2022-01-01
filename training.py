@@ -70,14 +70,14 @@ num_classes = len(class_names)
 
 model = Sequential([
   data_augmentation,
-  layers.Conv2D(16, 3, padding='same', activation='relu'),
-  layers.Conv2D(16, 3, padding='same', activation='relu'),
-  layers.MaxPooling2D(),
   layers.Conv2D(32, 3, padding='same', activation='relu'),
   layers.Conv2D(32, 3, padding='same', activation='relu'),
   layers.MaxPooling2D(),
   layers.Conv2D(64, 3, padding='same', activation='relu'),
   layers.Conv2D(64, 3, padding='same', activation='relu'),
+  layers.MaxPooling2D(),
+  layers.Conv2D(128, 3, padding='same', activation='relu'),
+  layers.Conv2D(128, 3, padding='same', activation='relu'),
   layers.MaxPooling2D(),
   layers.Flatten(),
   layers.Dense(128, activation='relu'),
@@ -90,7 +90,8 @@ model.compile(optimizer='adam',
               metrics=['accuracy'])
 
 #use callbacks to save the model at its highest accuracy
-model_checkpoint_callback = tf.keras.callbacks.ModelCheckpoint(filepath=".\my_model", monitor='val_accuracy', mode='max', save_best_only=True)
+model_checkpoint_callback = tf.keras.callbacks.ModelCheckpoint(filepath=".\my_model\my_model.h5", monitor='val_accuracy', mode='max', save_best_only=True) #save model
+#model_checkpoint_callback = tf.keras.callbacks.ModelCheckpoint(filepath='weights/cp.h5', monitor='val_accuracy', mode='max', save_best_only=True, save_weights_only=True,) #save weights only
 
 #train the model
 epochs=15
